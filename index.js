@@ -3,7 +3,15 @@ const morgan = require('morgan')
 const app = express()
 
 app.use(express.json()) 
-app.use(morgan('tiny'))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :requestBody'))
+
+// Log the body of POST-requests
+morgan.token('requestBody', function getRequestBody (request) {
+    if (request.method === 'POST') {
+        return JSON.stringify(request.body)
+    }
+    return null
+})
 
 let persons = [
     {
@@ -41,14 +49,12 @@ const getRandomInt = (max) => {
     return Math.floor(Math.random() * Math.floor(max));
 }
 
-app.get('/', (request, response) => {
-    response.send('<h1>Hello!</h1>')
-})
-
+// Get all persons
 app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
 
+// Get person with id
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     const person = persons.find(person => person.id === id)
@@ -59,6 +65,7 @@ app.get('/api/persons/:id', (request, response) => {
     }
 })
 
+// Delete person with id
 app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     persons = persons.filter(person => person.id !== id)
@@ -66,6 +73,7 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end()
 })
 
+// Create new entry
 app.post('/api/persons', (request, response) => {
     const body = request.body
     if (!body.name || !body.number) {
@@ -87,6 +95,7 @@ app.post('/api/persons', (request, response) => {
     response.json(person)
 })
 
+// Get info about persons
 app.get('/info', (request, response) => {
     console.log('request ',request.headers)
     console.log('response ',response)
