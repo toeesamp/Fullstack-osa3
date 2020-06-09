@@ -100,7 +100,7 @@ app.post('/api/persons', (request, response) => {
 // Get info about persons
 app.get('/info', (request, response) => {
     response.type('html')
-    response.write(`<p>Phonebook has info for ${persons.length - 1} people</p>`)
+    response.write(`<p>Phonebook has info for ${persons.length} people</p>`)
     response.write(`<p> ${new Date()} </p>`)
     response.end()
 })
