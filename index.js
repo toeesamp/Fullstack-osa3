@@ -33,7 +33,7 @@ app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id)
         .then(person => {
             if (person) {
-                response.json(person)
+                response.json(person.toJSON())
             } else {
                 response.status(404).end()
             }
@@ -74,12 +74,33 @@ app.post('/api/persons', (request, response) => {
     })
 })
 
+// Update person with id
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+
+    Person.findByIdAndUpdate(request.params.id, person, {new: true})
+        .then(updatedPerson => {
+            response.json(updatedPerson.toJSON())
+        })
+        .catch(error => next(error))
+})
+
 // Get info about persons
 app.get('/info', (request, response) => {
-    response.type('html')
-    response.write(`<p>Phonebook has info for ${persons.length} people</p>`)
-    response.write(`<p> ${new Date()} </p>`)
-    response.end()
+    Person.find({})
+    .then(persons => {
+        response.type('html')
+        response.write(`<p>Phonebook has info for ${persons.length} people</p>`)
+        response.write(`<p> ${new Date()} </p>`)
+        response.end()
+    })
+    .catch(error => next(error))
+
 })
 
 const unknownEndpoint = (request, response) => {
