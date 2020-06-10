@@ -84,23 +84,25 @@ app.delete('/api/persons/:id', (request, response) => {
 // Create new entry
 app.post('/api/persons', (request, response) => {
     const body = request.body
-    if (!body.name || !body.number) {
+
+    if (body.name === undefined || body.number === undefined) {
         return response.status(400).json({ 
             error: 'The request must include name and number' 
         })
     }
-    if ((persons.some(person => person['name'] === body.name))) {
-        return response.status(400).json({ 
-            error: 'Person with that name already exists' 
-        })
-    }
-    const person = {
+    //if ((persons.some(person => person['name'] === body.name))) {
+    //    return response.status(400).json({ 
+    //        error: 'Person with that name already exists' 
+    //    })
+    //}
+    const person = new Person({
         name: body.name,
         number: body.number,
-        id: generateId()
-    }
-    persons = persons.concat(person)
-    response.json(person)
+    })
+
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
+    })
 })
 
 // Get info about persons
