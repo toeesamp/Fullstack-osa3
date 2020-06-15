@@ -44,26 +44,13 @@ app.get('/api/persons/:id', (request, response, next) => {
 // Delete person with id
 app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndRemove(request.params.id)
-        .then(result => {
-            response.status(204).end()
-        })
+        .then(response.status(204).end())
         .catch(error => next(error))
 })
 
 // Create new entry
 app.post('/api/persons', (request, response, next) => {
     const body = request.body
-
-    //if (body.name === undefined || body.number === undefined) {
-    //    return response.status(400).json({ 
-    //        error: 'The request must include name and number' 
-    //    })
-    //}
-    //if ((persons.some(person => person['name'] === body.name))) {
-    //    return response.status(400).json({ 
-    //        error: 'Person with that name already exists' 
-    //    })
-    //}
     const person = new Person({
         name: body.name,
         number: body.number,
@@ -71,7 +58,7 @@ app.post('/api/persons', (request, response, next) => {
 
     person.save()
         .then(savedPerson => {
-        response.json(savedPerson)
+            response.json(savedPerson)
         })
         .catch(error => next(error))
 })
@@ -85,7 +72,7 @@ app.put('/api/persons/:id', (request, response, next) => {
         number: body.number
     }
 
-    Person.findByIdAndUpdate(request.params.id, person, {new: true})
+    Person.findByIdAndUpdate(request.params.id, person, { new: true })
         .then(updatedPerson => {
             response.json(updatedPerson.toJSON())
         })
@@ -93,15 +80,15 @@ app.put('/api/persons/:id', (request, response, next) => {
 })
 
 // Get info about persons
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
     Person.find({})
-    .then(persons => {
-        response.type('html')
-        response.write(`<p>Phonebook has info for ${persons.length} people</p>`)
-        response.write(`<p> ${new Date()} </p>`)
-        response.end()
-    })
-    .catch(error => next(error))
+        .then(persons => {
+            response.type('html')
+            response.write(`<p>Phonebook has info for ${persons.length} people</p>`)
+            response.write(`<p> ${new Date()} </p>`)
+            response.end()
+        })
+        .catch(error => next(error))
 
 })
 
